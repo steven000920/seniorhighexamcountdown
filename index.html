@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會考倒數</title>
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px rgba(135, 206, 235, 0.8); }
+            50% { box-shadow: 0 0 20px rgba(135, 206, 235, 1); }
+            100% { box-shadow: 0 0 10px rgba(135, 206, 235, 0.8); }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: blur(12px); /* 初始模糊 */
+            z-index: -1;
+            transition: filter 1s ease-in-out; /* 背景動態模糊 */
+        }
+
+        .countdown-wrapper {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        .countdown {
+            font-size: 3rem;
+            font-weight: bold;
+            background-color: rgba(135, 206, 235, 0.8);
+            padding: 70px 80px;
+            border-radius: 15px;
+            max-width: 90%;
+            width: 700px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            animation: glow 2s infinite alternate;
+        }
+
+        .countdown span {
+            font-weight: bold;
+            font-size: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .countdown {
+                font-size: 2.25rem;
+                padding: 40px 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .countdown {
+                font-size: 1.8rem;
+                padding: 25px 35px;
+            }
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background" id="background"></div>
+    <div class="countdown-wrapper">
+        <div class="title">會考倒數</div>
+        <div class="countdown" id="countdown">
+            <span id="days">倒數計時中...</span>
+        </div>
+    </div>
+
+    <footer>
+        Made By steven0920
+    </footer>
+
+    <script>
+        // 設定背景圖片隨機選取
+        const totalImages = 60; // 假設 /bg 資料夾內有 22 張圖片
+        const randomIndex = Math.floor(Math.random() * totalImages) + 1;
+        const selectedBackground = `bg/bg${randomIndex}.jpg`;
+        const backgroundElement = document.getElementById('background');
+        backgroundElement.style.backgroundImage = `url('${selectedBackground}')`;
+
+        // 延遲降低模糊度，達到動態模糊效果
+        setTimeout(() => {
+            backgroundElement.style.filter = "blur(5px)";
+        }, 1000);
+
+        // 設定目標日期
+        const targetDate = new Date('2025-05-17T00:00:00').getTime();
+
+        // 更新倒數計時
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+
+            if (timeLeft <= 0) {
+                document.getElementById('countdown').innerHTML = "<span>會考來臨了！</span>";
+                clearInterval(countdownInterval);
+            } else {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById('countdown').innerHTML = 
+                    `<span>${days} 天</span><span>${hours} 小時</span><span>${minutes} 分鐘</span><span>${seconds} 秒</span>`;
+            }
+        }
+
+        // 每秒更新一次
+        const countdownInterval = setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
